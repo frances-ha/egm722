@@ -94,7 +94,12 @@ river_feat = ShapelyFeature(rivers['geometry'], myCRS,
 ax.add_feature(river_feat)
 
 # ShapelyFeature creates a polygon, so for point data we can just use ax.plot()
-town_handle = ax.plot(towns.geometry.x, towns.geometry.y, 's', color='0.5', ms=6, transform=myCRS)
+# town_handle = ax.plot(towns.geometry.x, towns.geometry.y, 's', color='0.5', ms=6, transform=myCRS)
+
+town_handle = ax.plot(towns[towns['town_city'] == 0].geometry.x, towns[towns['town_city'] == 0].geometry.y, 's',
+                      color='0.5', ms=6, transform=myCRS)
+city_handle = ax.plot(towns[towns['town_city'] == 1].geometry.x, towns[towns['town_city'] == 1].geometry.y, 'D',
+                      color='r', ms=6, transform=myCRS)
 
 # generate a list of handles for the county datasets
 county_handles = generate_handles(counties.CountyName.unique(), county_colors, alpha=0.25)
@@ -130,4 +135,4 @@ for i, row in towns.iterrows():
 
 scale_bar(ax)
 
-myFig.savefig('map.png', bbox_inches='tight', dpi=300)
+myFig.savefig('map1.png', bbox_inches='tight', dpi=300)
