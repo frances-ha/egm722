@@ -23,7 +23,16 @@ plt.ion()
 
 # load the necessary data here and transform to a UTM projection
 counties = gpd.read_file('data_files/Counties.shp')
+print(counties.head())
+counties.crs
+counties_utm = counties.to_crs(epsg=32629)
+print(counties_utm.head())
+counties_utm.crs
+
 wards = gpd.read_file('data_files/NI_Wards.shp')
+wards.crs
+wards_utm = wards.to_crs(epsg=32629)
+print(wards_utm.head())
 # your analysis goes here...
 
 # ---------------------------------------------------------------------------------------------------------------------
