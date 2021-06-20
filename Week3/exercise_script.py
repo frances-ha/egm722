@@ -4,6 +4,7 @@ from mpl_toolkits.axes_grid1 import make_axes_locatable
 from cartopy.feature import ShapelyFeature
 import cartopy.crs as ccrs
 import matplotlib.patches as mpatches
+import pandas as pd
 
 
 # generate matplotlib handles to create a legend of the features we put in our map.
@@ -33,8 +34,30 @@ wards = gpd.read_file('data_files/NI_Wards.shp')
 wards.crs
 wards_utm = wards.to_crs(epsg=32629)
 print(wards_utm.head())
-# your analysis goes here...
+wards_utm.crs
 
+# your analysis goes here...
+join = gpd.sjoin(wards_utm, counties_utm, how='inner', lsuffix='left', rsuffix='right')
+print(join)
+
+summary = join.groupby(['CountyName'])['Population'].sum()
+
+print(summary)
+
+# identify wards located in more than one county
+
+clipped = []
+for county in counties_utm['CountyName'].unique():
+    tmp_clip = gpd.clip(wards_utm, counties_utm[counties_utm['CountyName'] == county])
+    for i, row in tmp_clip.iterrows():
+        tmp_clip.loc[i, 'Population'] = row['geometry'].length
+        tmp_clip.loc[i, 'CountyName'] = county
+    clipped.append(tmp_clip)
+
+    clipped_gdf = gpd.GeoDataFrame(pd.concat(clipped))
+    clip_total = clipped_gdf['Population'].sum()
+
+    print(clip_total)
 # ---------------------------------------------------------------------------------------------------------------------
 # below here, you may need to modify the script somewhat to create your map.
 # create a crs using ccrs.UTM() that corresponds to our CRS
